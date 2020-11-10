@@ -2,16 +2,42 @@
 
 namespace SignalRChatMVC
 {
-    public class ChatHub : Hub
-    {
-        //chat.server.send($('#displayname').val(), $('#message').val());
-        //means you below method shoud be same as script chat.server.send() method
-        public void Send(string name, string message)
-        {
-            // Call the addNewMessageToPage method to update clients.
+    using System;
+    using System.Runtime.Remoting.Contexts;
+    using System.Threading.Tasks;
 
-            //chat.client.addNewMessageToPage = function(name, message) should mathc below method
-            Clients.All.addNewMessageToPage(name, message);
+    public class MyHub : Hub
+    {
+        public void AddMessage(string name, string message)
+        {
+            Console.WriteLine("Hub AddMessage {0} {1}\n", name, message);
+            Clients.All.addMessage(name, message);
+        }
+
+        public void Heartbeat()
+        {
+            Console.WriteLine("Hub Heartbeat\n");
+            Clients.All.heartbeat();
+        }
+
+
+        public override Task OnConnected()
+        {
+            Console.WriteLine("Hub OnConnected {0}\n", Context.ConnectionId);
+            return (base.OnConnected());
+        }
+
+        public override Task OnDisconnected(bool stopCalled)
+        {
+            Console.WriteLine("Hub OnDisconnected {0}\n", Context.ConnectionId);
+            return base.OnDisconnected(stopCalled);
+        }
+
+
+        public override Task OnReconnected()
+        {
+            Console.WriteLine("Hub OnReconnected {0}\n", Context.ConnectionId);
+            return (base.OnReconnected());
         }
     }
 }
